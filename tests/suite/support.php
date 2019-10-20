@@ -1,59 +1,63 @@
 <?php
 
-if ( !function_exists('hmap') ) {
+use Illuminate\Support\Arr;
 
-  /**
-   * Simple function which aids in converting the tree hierarchy into something
-   * more easily testable...
-   *
-   * @param array   $nodes
-   * @return array
-   */
-  function hmap(array $nodes, $preserve = null) {
-    $output = array();
+if (!function_exists('hmap')) {
 
-    foreach($nodes as $node) {
-      if ( is_null($preserve) ) {
-        $output[$node['name']] = empty($node['children']) ? null : hmap($node['children']);
-      } else {
-        $preserve = is_string($preserve) ? array($preserve) : $preserve;
+    /**
+     * Simple function which aids in converting the tree hierarchy into something
+     * more easily testable...
+     *
+     * @param array $nodes
+     * @return array
+     */
+    function hmap(array $nodes, $preserve = null)
+    {
+        $output = array();
 
-        $current = array_only($node, $preserve);
-        if ( array_key_exists('children', $node) ) {
-          $children = $node['children'];
+        foreach ($nodes as $node) {
+            if (is_null($preserve)) {
+                $output[$node['name']] = empty($node['children']) ? null : hmap($node['children']);
+            } else {
+                $preserve = is_string($preserve) ? array($preserve) : $preserve;
 
-          if ( count($children) > 0 )
-            $current['children'] = hmap($children, $preserve);
+                $current = Arr::only($node, $preserve);
+                if (array_key_exists('children', $node)) {
+                    $children = $node['children'];
+
+                    if (count($children) > 0)
+                        $current['children'] = hmap($children, $preserve);
+                }
+
+                $output[] = $current;
+            }
         }
 
-        $output[] = $current;
-      }
+        return $output;
     }
-
-    return $output;
-  }
 
 }
 
-if ( !function_exists('array_ints_keys') ) {
+if (!function_exists('array_ints_keys')) {
 
-  /**
-   * Cast provided keys's values into ints. This is to wrestle with PDO driver
-   * inconsistencies.
-   *
-   * @param   array $input
-   * @param   mixed $keys
-   * @return  array
-   */
-  function array_ints_keys(array $input, $keys='id') {
-    $keys = is_string($keys) ? array($keys) : $keys;
+    /**
+     * Cast provided keys's values into ints. This is to wrestle with PDO driver
+     * inconsistencies.
+     *
+     * @param array $input
+     * @param mixed $keys
+     * @return  array
+     */
+    function array_ints_keys(array $input, $keys = 'id')
+    {
+        $keys = is_string($keys) ? array($keys) : $keys;
 
-    array_walk_recursive($input, function(&$value, $key) use ($keys) {
-      if ( array_search($key, $keys) !== false )
-        $value = (int) $value;
-    });
+        array_walk_recursive($input, function (&$value, $key) use ($keys) {
+            if (array_search($key, $keys) !== false)
+                $value = (int)$value;
+        });
 
-    return $input;
-  }
+        return $input;
+    }
 
 }

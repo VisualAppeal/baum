@@ -1,17 +1,21 @@
 <?php
 
-class CategoryTestCase extends BaumTestCase {
+class CategoryTestCase extends BaumTestCase
+{
 
-  public static function setUpBeforeClass() {
-    with(new CategoryMigrator)->up();
-  }
+    public static function setUpBeforeClass(): void
+    {
+        with(new CategoryMigrator)->up();
+    }
 
-  public function setUp() {
-    with(new CategorySeeder)->run();
-  }
+    public function setUp(): void
+    {
+        with(new CategorySeeder)->run();
+    }
 
-  protected function categories($name, $className = 'Category') {
-    return forward_static_call_array(array($className, 'where'), array('name', '=', $name))->first();
-  }
+    protected function categories($name, $className = 'Category')
+    {
+        return forward_static_call_array(array($className, 'where'), array('name', '=', $name))->first();
+    }
 
 }

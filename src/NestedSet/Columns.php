@@ -2,22 +2,25 @@
 
 namespace Baum\NestedSet;
 
-trait Columns {
+trait Columns
+{
     /**
      * Get the parent column name.
-    *
-    * @return string
-    */
-    public function getParentColumnName() {
+     *
+     * @return string
+     */
+    public function getParentColumnName()
+    {
         return $this->parentColumn;
     }
 
     /**
      * Get the table qualified parent column name.
-    *
-    * @return string
-    */
-    public function getQualifiedParentColumnName() {
+     *
+     * @return string
+     */
+    public function getQualifiedParentColumnName()
+    {
         $this->qualifyColumn($this->getParentColumnName());
     }
 
@@ -26,7 +29,8 @@ trait Columns {
      *
      * @return string
      */
-    public function getLeftColumnName() {
+    public function getLeftColumnName()
+    {
         return $this->leftColumn;
     }
 
@@ -35,7 +39,8 @@ trait Columns {
      *
      * @return string
      */
-    public function getQualifiedLeftColumnName() {
+    public function getQualifiedLeftColumnName()
+    {
         return $this->qualifyColumn($this->getLeftColumnName());
     }
 
@@ -44,8 +49,9 @@ trait Columns {
      *
      * @return int
      */
-    public function getLeft() {
-    return $this->getAttribute($this->getLeftColumnName());
+    public function getLeft()
+    {
+        return $this->getAttribute($this->getLeftColumnName());
     }
 
     /**
@@ -53,8 +59,9 @@ trait Columns {
      *
      * @return string
      */
-    public function getRightColumnName() {
-    return $this->rightColumn;
+    public function getRightColumnName()
+    {
+        return $this->rightColumn;
     }
 
     /**
@@ -62,8 +69,9 @@ trait Columns {
      *
      * @return string
      */
-    public function getQualifiedRightColumnName() {
-    return $this->getTable() . '.' . $this->getRightColumnName();
+    public function getQualifiedRightColumnName()
+    {
+        return $this->getTable() . '.' . $this->getRightColumnName();
     }
 
     /**
@@ -71,8 +79,9 @@ trait Columns {
      *
      * @return int
      */
-    public function getRight() {
-    return $this->getAttribute($this->getRightColumnName());
+    public function getRight()
+    {
+        return $this->getAttribute($this->getRightColumnName());
     }
 
     /**
@@ -80,8 +89,9 @@ trait Columns {
      *
      * @return string
      */
-    public function getDepthColumnName() {
-    return $this->depthColumn;
+    public function getDepthColumnName()
+    {
+        return $this->depthColumn;
     }
 
     /**
@@ -89,8 +99,9 @@ trait Columns {
      *
      * @return string
      */
-    public function getQualifiedDepthColumnName() {
-    return $this->getTable() . '.' . $this->getDepthColumnName();
+    public function getQualifiedDepthColumnName()
+    {
+        return $this->getTable() . '.' . $this->getDepthColumnName();
     }
 
     /**
@@ -98,8 +109,9 @@ trait Columns {
      *
      * @return int
      */
-    public function getDepth() {
-    return $this->getAttribute($this->getDepthColumnName());
+    public function getDepth()
+    {
+        return $this->getAttribute($this->getDepthColumnName());
     }
 
     /**
@@ -107,8 +119,9 @@ trait Columns {
      *
      * @return string
      */
-    public function getOrderColumnName() {
-    return is_null($this->orderColumn) ? $this->getLeftColumnName() : $this->orderColumn;
+    public function getOrderColumnName()
+    {
+        return is_null($this->orderColumn) ? $this->getLeftColumnName() : $this->orderColumn;
     }
 
     /**
@@ -116,8 +129,9 @@ trait Columns {
      *
      * @return string
      */
-    public function getQualifiedOrderColumnName() {
-    return $this->getTable() . '.' . $this->getOrderColumnName();
+    public function getQualifiedOrderColumnName()
+    {
+        return $this->getTable() . '.' . $this->getOrderColumnName();
     }
 
     /**
@@ -125,8 +139,9 @@ trait Columns {
      *
      * @return mixed
      */
-    public function getOrder() {
-    return $this->getAttribute($this->getOrderColumnName());
+    public function getOrder()
+    {
+        return $this->getAttribute($this->getOrderColumnName());
     }
 
     /**
@@ -134,8 +149,9 @@ trait Columns {
      *
      * @return array
      */
-    public function getScopedColumns() {
-    return (array) $this->scoped;
+    public function getScopedColumns()
+    {
+        return (array)$this->scoped;
     }
 
     /**
@@ -143,14 +159,16 @@ trait Columns {
      *
      * @return array
      */
-    public function getQualifiedScopedColumns() {
-    if ( !$this->isScoped() )
-        return $this->getScopedColumns();
+    public function getQualifiedScopedColumns()
+    {
+        if (!$this->isScoped())
+            return $this->getScopedColumns();
 
-    $prefix = $this->getTable() . '.';
+        $prefix = $this->getTable() . '.';
 
-    return array_map(function($c) use ($prefix) {
-        return $prefix . $c; }, $this->getScopedColumns());
+        return array_map(function ($c) use ($prefix) {
+            return $prefix . $c;
+        }, $this->getScopedColumns());
     }
 
 }

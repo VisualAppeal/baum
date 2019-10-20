@@ -1,121 +1,135 @@
 <?php
 
-class CategoryRelationsTest extends CategoryTestCase {
+class CategoryRelationsTest extends CategoryTestCase
+{
 
-  public function testParentRelationIsABelongsTo() {
-    $category = new Category;
+    public function testParentRelationIsABelongsTo()
+    {
+        $category = new Category;
 
-    $this->assertInstanceOf('Illuminate\Database\Eloquent\Relations\BelongsTo', $category->parent());
-  }
-
-  public function testParentRelationIsSelfReferential() {
-    $category = new Category;
-
-    $this->assertInstanceOf('Baum\Node', $category->parent()->getRelated());
-  }
-
-  public function testParentRelationRefersToCorrectField() {
-    $category = new Category;
-
-    if (method_exists($category->parent(), 'getForeignKeyName')) {
-        // For Laravel 5.6+
-        $this->assertEquals($category->getParentColumnName(), $category->parent()->getForeignKeyName());
-        $this->assertEquals($category->getQualifiedParentColumnName(), $category->parent()->getQualifiedForeignKeyName());
-    } else {
-        $this->assertEquals($category->getParentColumnName(), $category->parent()->getForeignKey());
-        $this->assertEquals($category->getQualifiedParentColumnName(), $category->parent()->getQualifiedForeignKey());
+        $this->assertInstanceOf('Illuminate\Database\Eloquent\Relations\BelongsTo', $category->parent());
     }
-  }
 
-  public function testParentRelation() {
-    $this->assertEquals($this->categories('Child 2.1')->parent()->first(), $this->categories('Child 2'));
-    $this->assertEquals($this->categories('Child 2')->parent()->first(), $this->categories('Root 1'));
-    $this->assertNull($this->categories('Root 1')->parent()->first());
-  }
+    public function testParentRelationIsSelfReferential()
+    {
+        $category = new Category;
 
-  public function testChildrenRelationIsAHasMany() {
-    $category = new Category;
+        $this->assertInstanceOf('Baum\Node', $category->parent()->getRelated());
+    }
 
-    $this->assertInstanceOf('Illuminate\Database\Eloquent\Relations\HasMany', $category->children());
-  }
+    public function testParentRelationRefersToCorrectField()
+    {
+        $category = new Category;
 
-  public function testChildrenRelationIsSelfReferential() {
-    $category = new Category;
+        if (method_exists($category->parent(), 'getForeignKeyName')) {
+            // For Laravel 5.6+
+            $this->assertEquals($category->getParentColumnName(), $category->parent()->getForeignKeyName());
+            $this->assertEquals($category->getQualifiedParentColumnName(), $category->parent()->getQualifiedForeignKeyName());
+        } else {
+            $this->assertEquals($category->getParentColumnName(), $category->parent()->getForeignKey());
+            $this->assertEquals($category->getQualifiedParentColumnName(), $category->parent()->getQualifiedForeignKey());
+        }
+    }
 
-    $this->assertInstanceOf('Baum\Node', $category->children()->getRelated());
-  }
+    public function testParentRelation()
+    {
+        $this->assertEquals($this->categories('Child 2.1')->parent()->first(), $this->categories('Child 2'));
+        $this->assertEquals($this->categories('Child 2')->parent()->first(), $this->categories('Root 1'));
+        $this->assertNull($this->categories('Root 1')->parent()->first());
+    }
 
-  public function testChildrenRelationReferesToCorrectField() {
-    $category = new Category;
+    public function testChildrenRelationIsAHasMany()
+    {
+        $category = new Category;
 
-    $this->assertEquals($category->getParentColumnName(), $category->children()->getForeignKeyName());
+        $this->assertInstanceOf('Illuminate\Database\Eloquent\Relations\HasMany', $category->children());
+    }
 
-    $this->assertEquals($category->getQualifiedParentColumnName(), $category->children()->getQualifiedForeignKeyName());
-  }
+    public function testChildrenRelationIsSelfReferential()
+    {
+        $category = new Category;
 
-  public function testChildrenRelation() {
-    $root = $this->categories('Root 1');
+        $this->assertInstanceOf('Baum\Node', $category->children()->getRelated());
+    }
 
-    foreach($root->children() as $child)
-      $this->assertEquals($root->getKey(), $child->getParentId());
+    public function testChildrenRelationReferesToCorrectField()
+    {
+        $category = new Category;
 
-    $expected = array($this->categories('Child 1'), $this->categories('Child 2'), $this->categories('Child 3'));
+        $this->assertEquals($category->getParentColumnName(), $category->children()->getForeignKeyName());
 
-    $this->assertEquals($expected, $root->children()->get()->all());
+        $this->assertEquals($category->getQualifiedParentColumnName(), $category->children()->getQualifiedForeignKeyName());
+    }
 
-    $this->assertEmpty($this->categories('Child 3')->children()->get()->all());
-  }
+    public function testChildrenRelation()
+    {
+        $root = $this->categories('Root 1');
 
-  public function testChildrenRelationUsesDefaultOrdering() {
-    $category = new Category;
+        foreach ($root->children() as $child)
+            $this->assertEquals($root->getKey(), $child->getParentId());
 
-    $query = $category->children()->getQuery()->getQuery();
+        $expected = array($this->categories('Child 1'), $this->categories('Child 2'), $this->categories('Child 3'));
 
-    $expected = array('column' => 'lft', 'direction' => 'asc');
-    $this->assertEquals($expected, $query->orders[0]);
-  }
+        $this->assertEquals($expected, $root->children()->get()->all());
 
-  public function testChildrenRelationUsesCustomOrdering() {
-    $category = new OrderedCategory;
+        $this->assertEmpty($this->categories('Child 3')->children()->get()->all());
+    }
 
-    $query = $category->children()->getQuery()->getQuery();
+    public function testChildrenRelationUsesDefaultOrdering()
+    {
+        $category = new Category;
 
-    $expected = array('column' => 'name', 'direction' => 'asc');
-    $this->assertEquals($expected, $query->orders[0]);
-  }
+        $query = $category->children()->getQuery()->getQuery();
 
-  public function testChildrenRelationObeysDefaultOrdering() {
-    $children = $this->categories('Root 1')->children()->get()->all();
+        $expected = array('column' => 'lft', 'direction' => 'asc');
+        $this->assertEquals($expected, $query->orders[0]);
+    }
 
-    $expected = array($this->categories('Child 1'), $this->categories('Child 2'), $this->categories('Child 3'));
-    $this->assertEquals($expected, $children);
+    public function testChildrenRelationUsesCustomOrdering()
+    {
+        $category = new OrderedCategory;
 
-    // Swap 2 nodes & re-test
-    Category::query()->where('id', '=', 2)->update(array('lft' => 8, 'rgt' => 9));
-    Category::query()->where('id', '=', 5)->update(array('lft' => 2, 'rgt' => 3));
+        $query = $category->children()->getQuery()->getQuery();
 
-    $children = $this->categories('Root 1')->children()->get()->all();
+        $expected = array('column' => 'name', 'direction' => 'asc');
+        $this->assertEquals($expected, $query->orders[0]);
+    }
 
-    $expected = array($this->categories('Child 3'), $this->categories('Child 2'), $this->categories('Child 1'));
-    $this->assertEquals($expected, $children);
-  }
+    public function testChildrenRelationObeysDefaultOrdering()
+    {
+        $children = $this->categories('Root 1')->children()->get()->all();
 
-  public function testChildrenRelationObeysCustomOrdering() {
-    with(new OrderedCategorySeeder)->run();
+        $expected = array($this->categories('Child 1'), $this->categories('Child 2'), $this->categories('Child 3'));
+        $this->assertEquals($expected, $children);
 
-    $children = OrderedCategory::find(1)->children()->get()->all();
+        // Swap 2 nodes & re-test
+        Category::query()->where('id', '=', 2)->update(array('lft' => 8, 'rgt' => 9));
+        Category::query()->where('id', '=', 5)->update(array('lft' => 2, 'rgt' => 3));
 
-    $expected = array(OrderedCategory::find(5), OrderedCategory::find(2), OrderedCategory::find(3));
-    $this->assertEquals($expected, $children);
-  }
+        $children = $this->categories('Root 1')->children()->get()->all();
 
-  public function testChildrenRelationAllowsNodeCreation() {
-    $child = new Category(array('name' => 'Child 3.1'));
+        $expected = array($this->categories('Child 3'), $this->categories('Child 2'), $this->categories('Child 1'));
+        $this->assertEquals($expected, $children);
+    }
 
-    $this->categories('Child 3')->children()->save($child);
+    public function testChildrenRelationObeysCustomOrdering()
+    {
+        with(new OrderedCategorySeeder)->run();
 
-    $this->assertTrue($child->exists);
-    $this->assertEquals($this->categories('Child 3')->getKey(), $child->getParentId());
-  }
+        $children = OrderedCategory::find(1)->children()->get()->all();
+
+        $expected = array(OrderedCategory::find(5), OrderedCategory::find(2), OrderedCategory::find(3));
+        $this->assertEquals($expected, $children);
+    }
+
+    public function testChildrenRelationAllowsNodeCreation()
+    {
+        $child = new Category(array('name' => 'Child 3.1'));
+
+        $this->categories('Child 3')->children()->save($child);
+
+        $this->assertTrue($child->exists);
+        $this->assertEquals($this->categories('Child 3')->getKey(), $child->getParentId());
+    }
 
 }
