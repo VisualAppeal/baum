@@ -1,8 +1,8 @@
 # Baum
 
-[![Build Status](https://travis-ci.org/etrepat/baum.png?branch=master)](https://travis-ci.org/etrepat/baum)
+[![Build Status](https://travis-ci.org/VisualAppeal/baum.svg?branch=master)](https://travis-ci.org/VisualAppeal/baum)
 
-Baum is an implementation of the [Nested Set](http://en.wikipedia.org/wiki/Nested_set_model) pattern for [Laravel 5's](http://laravel.com/) Eloquent ORM.
+Baum is an implementation of the [Nested Set](http://en.wikipedia.org/wiki/Nested_set_model) pattern for [Laravel 6's](http://laravel.com/) Eloquent ORM.
 
 > For **Laravel 4.2.x compatibility**, check the [1.0.x branch](https://github.com/etrepat/baum/tree/1.0.x-stable) branch or use the latest [1.0.x tagged release](https://github.com/etrepat/baum/releases).
 
